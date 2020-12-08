@@ -17,8 +17,8 @@
     <title>APIs and Microservices Project FCC</title>
   </head>
   <body>
-      <h1>APIs and Microservices Project</h1>
-      <hr>
+    <h1>APIs and Microservices Project</h1>
+    <hr />
     <div class="container">
       <h2>Timestamp Microservice</h2>
       <div class="container">
@@ -58,6 +58,22 @@
           Firefox/50.0"}</code
         >
       </p>
+        <h2>URL Shortener Microservice</h2>
+        <section>
+          <form action="api/shorturl/new" method="POST">
+            <fieldset>
+              <legend>URL Shortener</legend>
+              <label for="url_input">URL:</label>
+              <input
+                id="url_input"
+                type="text"
+                name="url"
+                placeholder="https://www.freecodecamp.org/"
+              />
+              <input type="submit" value="POST URL" />
+            </fieldset>
+          </form>
+        </section>
     </div>
     <div class="footer">
       <p>by <a href="https://www.freecodecamp.org">freeCodeCamp</a></p>

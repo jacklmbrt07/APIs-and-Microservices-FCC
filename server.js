@@ -2,13 +2,29 @@
 // Where the app starts, brain of the project
 
 // init project
+require("dotenv").config();
 const express = require("express");
 const app = express();
-const PORT = 3000 || process.env.PORT;
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const port = process.env.PORT || 3000;
 
 // CORS enabled for testing
 const cors = require("cors");
 app.use(cors({ optionsSuccessStatus: 200 }));
+
+// Database Connection
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+const urlSchema = new mongoose.Schema({
+  original: { type: String, required: true },
+  short: Number,
+});
+
+let Url = mongoose.model("Url", urlSchema);
 
 // styling
 app.use(express.static("public"));
@@ -64,11 +80,63 @@ app.get("/api/whoami", (req, res) => {
 });
 
 // challenge 3
+var responseObject = {};
+app.post(
+  "/api/shorturl/new",
+  bodyParser.urlencoded({ extended: false }),
+  (req, res) => {
+    let inputUrl = req.body.url;
+    let urlRegex = new RegExp(
+      /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi
+    );
+
+    if (!inputUrl.match(urlRegex)) {
+      res.json({ error: "Invalid URL" });
+      return;
+    }
+
+    responseObject["original_url"] = inputUrl;
+    let inputShort = 1;
+
+    Url.findOne({})
+      .sort({ short: "desc" })
+      .exec((err, result) => {
+        if (!err && result != undefined) {
+          inputShort = result.short + 1;
+        }
+        if (!err) {
+          Url.findOneAndUpdate(
+            { original: inputUrl },
+            { original: inputUrl, short: inputShort },
+            { new: true, upsert: true },
+            (err, savedUrl) => {
+              if (!err) {
+                responseObject["short_url"] = savedUrl.short;
+              }
+            }
+          );
+        }
+      });
+    res.json(responseObject);
+  }
+);
+
+app.get("/api/shorturl/:input", (req, res) => {
+  let input = req.params.input;
+
+  Url.findOne({ short: input }, (err, result) => {
+    if (!err && result != undefined) {
+      res.redirect(result.original);
+    } else {
+      res.json("URL not found");
+    }
+  });
+});
 // challenge 4
 // challenge 5
 
 /////////////////////////////// ////////////// //////////////////////////////////
 
-const listener = app.listen(PORT, () => {
-  console.log("Your app is listening on port " + listener.address().port);
+const listener = app.listen(port, () => {
+  console.log(`Your app is listening on Port ${port}`);
 });
