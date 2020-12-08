@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/jacklmbrt07/APIs-and-Microservices-FCC/issues"
   },
-  "homepage": "https://github.com/jacklmbrt07/APIs-and-Microservices-FCC#readme"
+  "homepage": "https://github.com/jacklmbrt07/APIs-and-Microservices-FCC#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "node": "^15.3.0"
+  }
 }
